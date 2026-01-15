@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enxoval - Yudi & Ana</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --ocean-blue: #1a5276; 
             --wave-main: #5dade2;  
-            --wave-light: #a9cce3; 
-            --soft-blue-bg: #eaf4f9; /* Fundo azul claro da foto */
+            --soft-blue-bg: #eaf4f9; /* Fundo azul claro minimalista conforme as fotos */
             --card-bg: #ffffff;
+            --btn-dark: #2c3e50;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--soft-blue-bg); /* Fundo alterado conforme solicitado */
+            background-color: var(--soft-blue-bg);
             margin: 0;
             padding: 20px;
             display: flex;
@@ -27,7 +31,7 @@
             position: relative;
         }
 
-        /* Ondas Mantidas e Bem Visíveis */
+        /* Ondas Bem Visíveis no Rodapé */
         .waves-container {
             position: fixed;
             bottom: 0;
@@ -37,18 +41,9 @@
             z-index: -1;
             line-height: 0;
         }
-
-        .waves {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            min-height: 150px;
-        }
-
-        .parallax > use {
-            animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
-        }
-        
+        .waves { width: 100%; height: 100%; min-height: 150px; }
+        .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
+        /* Cores das ondas ajustadas para visibilidade total */
         .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; fill: rgba(93, 173, 226, 0.8); }
         .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; fill: rgba(169, 204, 227, 0.6); }
         .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; fill: rgba(46, 134, 193, 0.4); }
@@ -63,81 +58,66 @@
         header h1 { font-family: 'Playfair Display', serif; color: var(--ocean-blue); font-size: 2.8rem; margin: 0; }
         header p { color: var(--wave-main); font-size: 0.9rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; }
 
-        .container { width: 100%; max-width: 600px; z-index: 1; padding-bottom: 150px; }
+        .container { width: 100%; max-width: 550px; z-index: 1; padding-bottom: 150px; }
 
+        /* Área de Cadastro conforme layout das imagens */
         .input-card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             margin-bottom: 30px;
             backdrop-filter: blur(10px);
         }
 
         .row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #d6eaf8;
-            border-radius: 12px;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        .file-label {
-            background: var(--wave-main);
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        input[type="text"] { flex: 1; padding: 14px; border: 2.5px solid #d6eaf8; border-radius: 12px; outline: none; font-size: 1.1rem; }
+        .file-label { background: #d6eaf8; color: #1a5276; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; }
 
         #addBtn {
             width: 100%;
-            background: var(--ocean-blue);
+            background: var(--btn-dark); /* Botão azul marinho conforme a foto */
             color: white;
             border: none;
-            padding: 15px;
+            padding: 18px;
             border-radius: 12px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
         }
 
+        /* Cards dos Itens com foto grande */
         .item-card {
             background: var(--card-bg);
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 18px;
+            margin-bottom: 18px;
+            padding: 20px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border: 1px solid #eaf2f8;
+            gap: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
         }
 
         .item-img {
-            width: 110px;
+            width: 110px; 
             height: 110px;
-            border-radius: 12px;
+            border-radius: 15px;
             object-fit: cover;
             border: 3px solid white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .item-info { flex: 1; display: flex; align-items: center; gap: 15px; }
-        .item-info label { font-size: 1.4rem; font-weight: 700; color: var(--ocean-blue); }
+        .item-info { flex: 1; display: flex; align-items: center; gap: 20px; }
+        .item-info label { font-size: 1.5rem; font-weight: 700; color: var(--ocean-blue); cursor: pointer; }
 
-        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--wave-main); cursor: pointer; }
+        input[type="checkbox"] { width: 30px; height: 30px; accent-color: var(--wave-main); cursor: pointer; }
 
-        .item-card.checked { opacity: 0.6; filter: grayscale(0.5); background: #f8f9f9; }
-        .item-card.checked label { text-decoration: line-through; }
+        /* Estilo para itens comprados */
+        .item-card.checked { opacity: 0.6; filter: grayscale(0.4); background: #f8f9f9; }
+        .item-card.checked label { text-decoration: line-through; color: #95a5a6; }
 
-        .delete-btn { background: none; border: none; color: #ec7063; font-size: 26px; cursor: pointer; }
-
+        .delete-btn { background: none; border: none; color: #ec7063; font-size: 28px; cursor: pointer; opacity: 0.6; }
         #fileInput { display: none; }
     </style>
 </head>
@@ -145,7 +125,7 @@
 
     <header>
         <h1>Yudi & Ana</h1>
-        <p>Enxoval do Nosso Lar</p>
+        <p>NOSSO FUTURO LAR</p>
     </header>
 
     <div class="container">
@@ -157,16 +137,12 @@
             </div>
             <button id="addBtn">Adicionar à Lista</button>
         </div>
-
         <div id="listGrid"></div>
     </div>
 
     <div class="waves-container">
-        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-            <defs>
-                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-            </defs>
+        <svg class="waves" viewBox="0 24 150 28" preserveAspectRatio="none">
+            <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
             <g class="parallax">
                 <use xlink:href="#gentle-wave" x="48" y="0" />
                 <use xlink:href="#gentle-wave" x="48" y="3" />
@@ -177,12 +153,26 @@
     </div>
 
     <script>
+        // Configurações do seu projeto Firebase 'enxoval-yudi'
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtttgun9WXvB9h91B582SHfgL3lBMGWWA",
+            authDomain: "enxoval-yudi.firebaseapp.com",
+            databaseURL: "https://enxoval-yudi-default-rtdb.firebaseio.com",
+            projectId: "enxoval-yudi",
+            storageBucket: "enxoval-yudi.firebasestorage.app",
+            messagingSenderId: "262750628692",
+            appId: "1:262750628692:web:44ef1dd3d9f557231a76c1"
+        };
+
+        // Inicialização
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const itemInput = document.getElementById('itemInput');
         const fileInput = document.getElementById('fileInput');
         const addBtn = document.getElementById('addBtn');
         const listGrid = document.getElementById('listGrid');
 
-        let minhaLista = JSON.parse(localStorage.getItem('enxoval_mar_v2')) || [];
         let base64Image = "";
 
         fileInput.addEventListener('change', function() {
@@ -194,57 +184,44 @@
             }
         });
 
-        function adicionarItem() {
+        addBtn.addEventListener('click', () => {
             const nome = itemInput.value.trim();
             if (nome) {
-                minhaLista.push({
-                    id: Date.now(),
+                db.ref('enxoval').push({
                     texto: nome,
                     foto: base64Image,
                     comprado: false
                 });
                 itemInput.value = "";
-                fileInput.value = "";
                 base64Image = "";
-                salvarERenderizar();
+                fileInput.value = "";
             }
-        }
+        });
 
-        function salvarERenderizar() {
-            localStorage.setItem('enxoval_mar_v2', JSON.stringify(minhaLista));
-            renderizarLista();
-        }
-
-        function renderizarLista() {
+        // Atualização em tempo real entre celulares
+        db.ref('enxoval').on('value', (snapshot) => {
             listGrid.innerHTML = "";
-            minhaLista.sort((a,b) => a.comprado - b.comprado).forEach(item => {
-                const div = document.createElement('div');
-                div.className = `item-card ${item.comprado ? 'checked' : ''}`;
-                div.innerHTML = `
-                    <img src="${item.foto || 'https://via.placeholder.com/110/d6eaf8/1a5276?text=Sem+Foto'}" class="item-img">
-                    <div class="item-info">
-                        <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggle(${item.id})">
-                        <label>${item.texto}</label>
-                    </div>
-                    <button class="delete-btn" onclick="remover(${item.id})">&times;</button>
-                `;
-                listGrid.appendChild(div);
-            });
-        }
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    const div = document.createElement('div');
+                    div.className = `item-card ${item.comprado ? 'checked' : ''}`;
+                    div.innerHTML = `
+                        <img src="${item.foto || 'https://via.placeholder.com/110/d6eaf8/1a5276?text=📷'}" class="item-img">
+                        <div class="item-info">
+                            <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggle('${key}', ${item.comprado})">
+                            <label>${item.texto}</label>
+                        </div>
+                        <button class="delete-btn" onclick="remover('${key}')">&times;</button>
+                    `;
+                    listGrid.appendChild(div);
+                });
+            }
+        });
 
-        function toggle(id) {
-            const item = minhaLista.find(i => i.id === id);
-            item.comprado = !item.comprado;
-            salvarERenderizar();
-        }
-
-        function remover(id) {
-            minhaLista = minhaLista.filter(i => i.id !== id);
-            salvarERenderizar();
-        }
-
-        addBtn.addEventListener('click', adicionarItem);
-        renderizarLista();
+        function toggle(id, status) { db.ref('enxoval/' + id).update({ comprado: !status }); }
+        function remover(id) { if(confirm("Remover da lista?")) db.ref('enxoval/' + id).remove(); }
     </script>
 </body>
 </html>
