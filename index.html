@@ -13,143 +13,206 @@
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
 
   <style>
-    :root {
-      --ocean-blue: #1a5276;
-      --wave-main: #5dade2;
-      --soft-blue-bg: #eaf4f9;
-      --card-bg: #ffffff;
+    :root{
+      --ocean-blue:#1a5276;
+      --wave-main:#5dade2;
+      --soft-blue-bg:#eaf4f9;
+      --card-bg:#ffffff;
     }
 
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: var(--soft-blue-bg);
-      margin: 0;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
+    body{
+      font-family:'Montserrat',sans-serif;
+      background-color:var(--soft-blue-bg);
+      margin:0;
+      padding:15px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
     }
 
     /* ondas */
-    .waves-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 20vh;
-      z-index: -1;
-      line-height: 0;
+    .waves-container{
+      position:fixed;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:20vh;
+      z-index:-1;
+      line-height:0;
     }
-    .waves { width: 100%; height: 100%; min-height: 150px; }
-    .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
-    .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; fill: rgba(93, 173, 226, 0.7); }
-    .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; fill: rgba(169, 204, 227, 0.5); }
-    .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; fill: rgba(46, 134, 193, 0.3); }
-    .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; fill: #5dade2; }
+    .waves{width:100%;height:100%;min-height:150px;}
+    .parallax > use{animation:move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;}
+    .parallax > use:nth-child(1){animation-delay:-2s;animation-duration:7s;fill:rgba(93,173,226,.7);}
+    .parallax > use:nth-child(2){animation-delay:-3s;animation-duration:10s;fill:rgba(169,204,227,.5);}
+    .parallax > use:nth-child(3){animation-delay:-4s;animation-duration:13s;fill:rgba(46,134,193,.3);}
+    .parallax > use:nth-child(4){animation-delay:-5s;animation-duration:20s;fill:#5dade2;}
+    @keyframes move-forever{0%{transform:translate3d(-90px,0,0);}100%{transform:translate3d(85px,0,0);}}
 
-    @keyframes move-forever {
-      0% { transform: translate3d(-90px,0,0); }
-      100% { transform: translate3d(85px,0,0); }
-    }
+    header{text-align:center;margin-bottom:20px;z-index:1;}
+    header h1{font-family:'Playfair Display',serif;color:var(--ocean-blue);font-size:2.2rem;margin:0;}
+    header p{color:var(--wave-main);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
 
-    header { text-align: center; margin-bottom: 20px; z-index: 1; }
-    header h1 { font-family: 'Playfair Display', serif; color: var(--ocean-blue); font-size: 2.2rem; margin: 0; }
-    header p { color: var(--wave-main); font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+    .container{width:100%;max-width:500px;z-index:1;padding-bottom:150px;}
 
-    .container { width: 100%; max-width: 500px; z-index: 1; padding-bottom: 150px; }
-
-    .input-card {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
+    .input-card{
+      background:rgba(255,255,255,.95);
+      padding:15px;
+      border-radius:15px;
+      box-shadow:0 8px 20px rgba(0,0,0,.05);
+      margin-bottom:20px;
+      backdrop-filter:blur(10px);
     }
 
-    .row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-    input[type="text"] { flex: 1; padding: 10px; border: 1.5px solid #d6eaf8; border-radius: 10px; outline: none; font-size: 0.95rem; }
-    .file-label { background: var(--wave-main); color: white; padding: 8px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; }
-
-    #addBtn {
-      width: 100%;
-      background: #2c3e50;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
+    .row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+    input[type="text"]{
+      flex:1;
+      padding:10px;
+      border:1.5px solid #d6eaf8;
+      border-radius:10px;
+      outline:none;
+      font-size:.95rem;
+    }
+    .file-label{
+      background:var(--wave-main);
+      color:white;
+      padding:8px;
+      border-radius:50%;
+      cursor:pointer;
+      font-size:1.1rem;
     }
 
-    /* card conta */
-    .auth-card {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
+    #addBtn{
+      width:100%;
+      background:#2c3e50;
+      color:white;
+      border:none;
+      padding:12px;
+      border-radius:10px;
+      font-size:1rem;
+      font-weight:600;
+      cursor:pointer;
     }
-    .auth-info .title { font-weight: 600; color: var(--ocean-blue); margin-bottom: 2px; }
-    .auth-info .sub { font-size: 0.9rem; color: #2c3e50; opacity: 0.85; word-break: break-all; }
-    .auth-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-    .btn {
-      border: none;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      color: #fff;
-      background: var(--wave-main);
-    }
-    .btn-danger { background: #ec7063; }
 
     /* lista */
-    .item-card {
-      background: var(--card-bg);
-      margin-bottom: 10px;
-      padding: 10px 15px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    .item-card{
+      background:var(--card-bg);
+      margin-bottom:10px;
+      padding:10px 15px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      gap:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,.04);
     }
-
-    .item-img {
-      width: 65px;
-      height: 65px;
-      border-radius: 8px;
-      object-fit: cover;
-      border: 2px solid white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .item-img{
+      width:65px;height:65px;
+      border-radius:8px;
+      object-fit:cover;
+      border:2px solid white;
+      box-shadow:0 2px 5px rgba(0,0,0,.1);
     }
-
-    .item-info { flex: 1; display: flex; align-items: center; gap: 12px; }
-    .item-info label { font-size: 1.1rem; font-weight: 600; color: var(--ocean-blue); }
-
-    input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--wave-main); cursor: pointer; }
-
-    .item-card.checked { opacity: 0.6; filter: grayscale(0.3); background: #f1f8fc; }
-    .item-card.checked label { text-decoration: line-through; color: #95a5a6; }
-
-    .delete-btn { background: none; border: none; color: #ec7063; font-size: 22px; cursor: pointer; opacity: 0.4; }
-    #fileInput { display: none; }
+    .item-info{flex:1;display:flex;align-items:center;gap:12px;}
+    .item-info label{font-size:1.1rem;font-weight:600;color:var(--ocean-blue);}
+    input[type="checkbox"]{width:22px;height:22px;accent-color:var(--wave-main);cursor:pointer;}
+    .item-card.checked{opacity:.6;filter:grayscale(.3);background:#f1f8fc;}
+    .item-card.checked label{text-decoration:line-through;color:#95a5a6;}
+    .delete-btn{background:none;border:none;color:#ec7063;font-size:22px;cursor:pointer;opacity:.4;}
+    #fileInput{display:none;}
 
     /* telas */
-    #loginScreen { width: 100%; max-width: 500px; }
-    #appScreen { display: none; width: 100%; }
-    #loginError { margin-top: 10px; color: #ec7063; font-weight: 700; display: none; }
-    #loginHint { margin: 0 0 12px; opacity: .8; }
+    #loginScreen{width:100%;max-width:500px;}
+    #appScreen{display:none;width:100%;}
+
+    /* login bonito */
+    .login-card{
+      text-align:center;
+      padding:22px 18px;
+    }
+    .login-badge{
+      width:54px;height:54px;
+      margin:0 auto 12px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(93,173,226,.18);
+      border:1px solid rgba(93,173,226,.35);
+      color:var(--ocean-blue);
+      font-size:26px;
+    }
+    .login-title{
+      margin:0 0 6px;
+      color:var(--ocean-blue);
+      font-size:1.2rem;
+      font-weight:700;
+    }
+    .login-sub{
+      margin:0 0 16px;
+      color:#2c3e50;
+      opacity:.78;
+      line-height:1.4;
+      font-size:.95rem;
+    }
+    .login-btn{
+      width:100%;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--wave-main);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      box-shadow:0 10px 18px rgba(93,173,226,.25);
+    }
+    .google-dot{
+      width:18px;height:18px;border-radius:6px;
+      background:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:#2c3e50;
+      font-size:12px;
+      font-weight:800;
+    }
+    #loginError{
+      margin-top:12px;
+      color:#ec7063;
+      font-weight:700;
+      display:none;
+    }
+
+    /* botão sair discreto (não mexe na centralização da lista) */
+    #logoutMini{
+      position:fixed;
+      top:14px;
+      right:14px;
+      z-index:10;
+      display:none;
+      border:none;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      background:rgba(236,112,99,.12);
+      color:#ec7063;
+      backdrop-filter: blur(10px);
+      box-shadow:0 8px 20px rgba(0,0,0,.05);
+      border:1px solid rgba(236,112,99,.2);
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- botão sair discreto -->
+  <button id="logoutMini">Sair</button>
 
   <!-- TELA LOGIN -->
   <div id="loginScreen">
@@ -158,17 +221,21 @@
       <p>Nosso Futuro Lar</p>
     </header>
 
-    <div class="input-card" style="text-align:center;">
-      <h2 style="margin:0 0 10px;color:#1a5276;">Entrar</h2>
-      <p id="loginHint">Faça login para acessar a lista do enxoval.</p>
+    <div class="input-card login-card">
+      <div class="login-badge">🏡</div>
+      <h2 class="login-title">Acessar a lista</h2>
+      <p class="login-sub">Entre com a conta autorizada para adicionar, marcar e remover itens do enxoval.</p>
 
-      <button id="loginBtn" class="btn" style="width:100%;">Entrar com Google</button>
+      <button id="loginBtn" class="login-btn">
+        <span class="google-dot">G</span>
+        Entrar com Google
+      </button>
 
       <div id="loginError"></div>
     </div>
   </div>
 
-  <!-- TELA APP (ENXOVAL) -->
+  <!-- TELA APP -->
   <div id="appScreen">
     <header>
       <h1>Yudi & Ana</h1>
@@ -176,19 +243,6 @@
     </header>
 
     <div class="container">
-
-      <!-- CONTA -->
-      <div class="input-card auth-card">
-        <div class="auth-info">
-          <div class="title">Conta</div>
-          <div id="userInfo" class="sub">—</div>
-        </div>
-        <div class="auth-actions">
-          <button id="logoutBtn" class="btn btn-danger">Sair</button>
-        </div>
-      </div>
-
-      <!-- INPUT -->
       <div class="input-card">
         <div class="row">
           <input type="text" id="itemInput" placeholder="O que vamos comprar?">
@@ -200,26 +254,26 @@
 
       <div id="listGrid"></div>
     </div>
+  </div>
 
-    <div class="waves-container">
-      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-        <defs>
-          <path id="gentle-wave"
-            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-        </defs>
-        <g class="parallax">
-          <use xlink:href="#gentle-wave" x="48" y="0" />
-          <use xlink:href="#gentle-wave" x="48" y="3" />
-          <use xlink:href="#gentle-wave" x="48" y="5" />
-          <use xlink:href="#gentle-wave" x="48" y="7" />
-        </g>
-      </svg>
-    </div>
+  <div class="waves-container">
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+      <defs>
+        <path id="gentle-wave"
+          d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+      </defs>
+      <g class="parallax">
+        <use xlink:href="#gentle-wave" x="48" y="0" />
+        <use xlink:href="#gentle-wave" x="48" y="3" />
+        <use xlink:href="#gentle-wave" x="48" y="5" />
+        <use xlink:href="#gentle-wave" x="48" y="7" />
+      </g>
+    </svg>
   </div>
 
   <script>
-    // ====== CONFIG FIREBASE ======
+    // ===== CONFIG FIREBASE =====
     const firebaseConfig = {
       apiKey: "AIzaSyBtttgun9WXvB9h91B582SHfgL3lBMGWWA",
       authDomain: "enxoval-yudi.firebaseapp.com",
@@ -236,20 +290,18 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // ✅ COLE AQUI OS 2 UIDs (VOCÊ + ELA)
-    // (por enquanto deixe assim, depois substitui quando você pegar os UIDs)
+    // ✅ Apenas vocês dois (substitua pelo UID da Ana quando pegar)
     const ALLOWED_UIDS = [
-      "soQ9SVvjaQclgLaAe26TCqNWqxL2",
+      "soQ9SVvjaQclgLaAe26TCqNWVqxL2", // seu UID (pelo print)
       "UID_DA_ANA_AQUI"
     ];
 
-    // ====== ELEMENTOS ======
+    // ===== ELEMENTOS =====
     const loginScreen = document.getElementById("loginScreen");
     const appScreen   = document.getElementById("appScreen");
     const loginBtn    = document.getElementById("loginBtn");
-    const logoutBtn   = document.getElementById("logoutBtn");
+    const logoutMini  = document.getElementById("logoutMini");
     const loginError  = document.getElementById("loginError");
-    const userInfo    = document.getElementById("userInfo");
 
     const itemInput = document.getElementById('itemInput');
     const fileInput = document.getElementById('fileInput');
@@ -259,26 +311,27 @@
     let base64Image = "";
     let currentUser = null;
 
-    // ====== LOGIN/LOGOUT ======
+    // ===== LOGIN/LOGOUT =====
     loginBtn.addEventListener("click", async () => {
       loginError.style.display = "none";
       loginError.textContent = "";
 
       try {
         const res = await auth.signInWithPopup(provider);
-        console.log("UID LOGADO:", res.user.uid); // <-- pega o UID aqui também
+        console.log("UID LOGADO:", res.user.uid);
       } catch (e) {
         console.error(e);
+        // motivo mais comum: domínio não autorizado
         loginError.textContent = "Não foi possível logar. Verifique Google ativado e domínio autorizado.";
         loginError.style.display = "block";
       }
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    logoutMini.addEventListener("click", async () => {
       await auth.signOut();
     });
 
-    // ====== LISTENER CONTROLADO ======
+    // ===== LISTENER CONTROLADO =====
     let enxovalListenerAtivo = false;
 
     function iniciarListenerEnxoval() {
@@ -292,7 +345,6 @@
 
         const itensArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
 
-        // Pendentes em cima, concluídos embaixo + alfabética
         itensArray.sort((a, b) => {
           if (a.comprado !== b.comprado) return a.comprado - b.comprado;
           return (a.texto || "").localeCompare(b.texto || "");
@@ -321,16 +373,16 @@
       listGrid.innerHTML = "";
     }
 
-    // ====== AUTH STATE ======
+    // ===== AUTH STATE =====
     auth.onAuthStateChanged(async (user) => {
       currentUser = user;
 
-      // deslogado: mostra login
       if (!user) {
+        // deslogado -> mostra login
         pararListenerEnxoval();
+        logoutMini.style.display = "none";
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
-        userInfo.textContent = "—";
         return;
       }
 
@@ -340,27 +392,28 @@
       if (!autorizado) {
         // conta não permitida
         pararListenerEnxoval();
+        logoutMini.style.display = "none";
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
+
         loginError.textContent = "Acesso negado: esta conta não está autorizada.";
         loginError.style.display = "block";
 
-        // desloga automaticamente
         await auth.signOut();
         return;
       }
 
-      // autorizado: mostra app
+      // autorizado -> mostra app
       loginError.style.display = "none";
       loginError.textContent = "";
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
-      userInfo.textContent = `${user.displayName || "Usuário"} — UID: ${uid}`;
+      logoutMini.style.display = "block";
 
       iniciarListenerEnxoval();
     });
 
-    // ====== IMAGEM ======
+    // ===== IMAGEM =====
     fileInput.addEventListener('change', function() {
       const file = this.files[0];
       if (!file) return;
@@ -369,7 +422,7 @@
       reader.readAsDataURL(file);
     });
 
-    // ====== ADD ITEM ======
+    // ===== ADD ITEM =====
     addBtn.addEventListener('click', () => {
       if (!currentUser) {
         alert("Faça login.");
@@ -389,7 +442,7 @@
       }
     });
 
-    // ====== AÇÕES ======
+    // ===== AÇÕES =====
     function toggleItem(id, status) {
       if (!currentUser) return alert("Faça login.");
       db.ref('enxoval/' + id).update({ comprado: !status });
@@ -400,10 +453,8 @@
       if (confirm("Remover item?")) db.ref('enxoval/' + id).remove();
     }
 
-    // expõe no window (por causa do onchange/onclick inline)
     window.toggleItem = toggleItem;
     window.removerItem = removerItem;
   </script>
 </body>
 </html>
-
