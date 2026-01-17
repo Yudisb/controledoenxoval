@@ -33,6 +33,7 @@
       position:relative;
     }
 
+    /* ondas */
     .waves-container{
       position:fixed;
       bottom:0;
@@ -54,7 +55,14 @@
     header h1{font-family:'Playfair Display',serif;color:var(--ocean-blue);font-size:2.2rem;margin:0;}
     header p{color:var(--wave-main);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
 
-    .container{width:100%;max-width:500px;z-index:1;padding-bottom:150px;}
+    /* ✅ centralização garantida */
+    .container{
+      width:100%;
+      max-width:500px;
+      margin: 0 auto;
+      z-index:1;
+      padding-bottom:150px;
+    }
 
     .input-card{
       background:rgba(255,255,255,.95);
@@ -182,6 +190,7 @@
       white-space:pre-line;
     }
 
+    /* botão sair discreto */
     #logoutMini{
       position:fixed;
       top:14px;
@@ -208,33 +217,35 @@
 
   <!-- LOGIN -->
   <div id="loginScreen">
-    <header>
-      <h1>Yudi & Ana</h1>
-      <p>Nosso Futuro Lar</p>
-    </header>
+    <div class="container">
+      <header>
+        <h1>Yudi & Ana</h1>
+        <p>Nosso Futuro Lar</p>
+      </header>
 
-    <div class="input-card login-card">
-      <div class="login-badge">🏡</div>
-      <h2 class="login-title">Acessar a lista</h2>
-      <p class="login-sub">Entre com a conta autorizada para adicionar, marcar e remover itens do enxoval.</p>
+      <div class="input-card login-card">
+        <div class="login-badge">🏡</div>
+        <h2 class="login-title">Acessar a lista</h2>
+        <p class="login-sub">Entre com a conta autorizada para adicionar, marcar e remover itens do enxoval.</p>
 
-      <button id="loginBtn" class="login-btn">
-        <span class="google-dot">G</span>
-        Entrar com Google
-      </button>
+        <button id="loginBtn" class="login-btn">
+          <span class="google-dot">G</span>
+          Entrar com Google
+        </button>
 
-      <div id="loginError"></div>
+        <div id="loginError"></div>
+      </div>
     </div>
   </div>
 
   <!-- APP -->
   <div id="appScreen">
-    <header>
-      <h1>Yudi & Ana</h1>
-      <p>Nosso Futuro Lar</p>
-    </header>
-
     <div class="container">
+      <header>
+        <h1>Yudi & Ana</h1>
+        <p>Nosso Futuro Lar</p>
+      </header>
+
       <div class="input-card">
         <div class="row">
           <input type="text" id="itemInput" placeholder="O que vamos comprar?">
@@ -281,7 +292,6 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // persistir login
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
     const loginScreen = document.getElementById("loginScreen");
@@ -298,11 +308,9 @@
     let base64Image = "";
     let currentUser = null;
 
-    // ===== LOGIN =====
     loginBtn.addEventListener("click", async () => {
       loginError.style.display = "none";
       loginError.textContent = "";
-
       try {
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const res = await auth.signInWithPopup(provider);
@@ -318,7 +326,6 @@
       await auth.signOut();
     });
 
-    // ===== LISTENER CONTROLADO PELO FIREBASE (RULES) =====
     let listenerAtivo = false;
 
     function iniciarListener() {
@@ -350,7 +357,6 @@
           listGrid.appendChild(div);
         });
       }, (err) => {
-        // aqui cai PERMISSION_DENIED se as Rules bloquearem
         console.error(err);
         loginError.textContent = "Acesso negado pelas Rules do Firebase.";
         loginError.style.display = "block";
@@ -377,17 +383,15 @@
         return;
       }
 
-      // logado -> mostra app
       loginError.style.display = "none";
       loginError.textContent = "";
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
       logoutMini.style.display = "block";
 
-      iniciarListener(); // se Rules negarem, cai no error callback e desloga
+      iniciarListener();
     });
 
-    // ===== IMAGEM =====
     fileInput.addEventListener("change", function() {
       const file = this.files[0];
       if (!file) return;
@@ -396,10 +400,8 @@
       reader.readAsDataURL(file);
     });
 
-    // ===== ADD ITEM =====
     addBtn.addEventListener("click", () => {
       if (!currentUser) return alert("Faça login.");
-
       const nome = itemInput.value.trim();
       if (!nome) return;
 
@@ -414,7 +416,6 @@
       fileInput.value = "";
     });
 
-    // ===== AÇÕES =====
     function toggleItem(id, status) {
       if (!currentUser) return alert("Faça login.");
       db.ref("enxoval/" + id).update({ comprado: !status });
