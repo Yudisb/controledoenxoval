@@ -127,10 +127,7 @@
     #appScreen{display:none;width:100%;}
 
     /* login bonito */
-    .login-card{
-      text-align:center;
-      padding:22px 18px;
-    }
+    .login-card{ text-align:center; padding:22px 18px; }
     .login-badge{
       width:54px;height:54px;
       margin:0 auto 12px;
@@ -161,7 +158,7 @@
       border:none;
       border-radius:12px;
       padding:12px 14px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       background:var(--wave-main);
       color:#fff;
@@ -179,16 +176,17 @@
       justify-content:center;
       color:#2c3e50;
       font-size:12px;
-      font-weight:800;
+      font-weight:900;
     }
     #loginError{
       margin-top:12px;
       color:#ec7063;
-      font-weight:700;
+      font-weight:800;
       display:none;
+      white-space:pre-line;
     }
 
-    /* botão sair discreto (não mexe na centralização da lista) */
+    /* botão sair discreto */
     #logoutMini{
       position:fixed;
       top:14px;
@@ -199,7 +197,7 @@
       padding:10px 12px;
       border-radius:12px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       background:rgba(236,112,99,.12);
       color:#ec7063;
       backdrop-filter: blur(10px);
@@ -211,10 +209,9 @@
 
 <body>
 
-  <!-- botão sair discreto -->
   <button id="logoutMini">Sair</button>
 
-  <!-- TELA LOGIN -->
+  <!-- LOGIN -->
   <div id="loginScreen">
     <header>
       <h1>Yudi & Ana</h1>
@@ -235,7 +232,7 @@
     </div>
   </div>
 
-  <!-- TELA APP -->
+  <!-- APP -->
   <div id="appScreen">
     <header>
       <h1>Yudi & Ana</h1>
@@ -290,10 +287,14 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // ✅ Apenas vocês dois (substitua pelo UID da Ana quando pegar)
+    // ✅ Persistência (resolve currentUser undefined)
+    // LOCAL = mantém logado no navegador
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+
+    // ✅ Apenas vocês dois
     const ALLOWED_UIDS = [
-      "soQ9SVvjaQclgLaAe26TCqNWVqxL2", // seu UID (pelo print)
-      "UID_DA_ANA_AQUI"
+      "soQ9SVvjaQclgLaAe26TCqNWVqxL2", // seu UID
+      "UID_DA_ANA_AQUI"                // coloque o UID dela aqui depois
     ];
 
     // ===== ELEMENTOS =====
@@ -303,30 +304,32 @@
     const logoutMini  = document.getElementById("logoutMini");
     const loginError  = document.getElementById("loginError");
 
-    const itemInput = document.getElementById('itemInput');
-    const fileInput = document.getElementById('fileInput');
-    const addBtn    = document.getElementById('addBtn');
-    const listGrid  = document.getElementById('listGrid');
+    const itemInput = document.getElementById("itemInput");
+    const fileInput = document.getElementById("fileInput");
+    const addBtn    = document.getElementById("addBtn");
+    const listGrid  = document.getElementById("listGrid");
 
     let base64Image = "";
     let currentUser = null;
 
-    // ===== LOGIN/LOGOUT =====
+    // ===== LOGIN =====
     loginBtn.addEventListener("click", async () => {
       loginError.style.display = "none";
       loginError.textContent = "";
 
       try {
+        // garante persistência antes do popup
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const res = await auth.signInWithPopup(provider);
         console.log("UID LOGADO:", res.user.uid);
       } catch (e) {
         console.error(e);
-        // motivo mais comum: domínio não autorizado
         loginError.textContent = "Não foi possível logar. Verifique Google ativado e domínio autorizado.";
         loginError.style.display = "block";
       }
     });
 
+    // ===== LOGOUT =====
     logoutMini.addEventListener("click", async () => {
       await auth.signOut();
     });
@@ -338,7 +341,7 @@
       if (enxovalListenerAtivo) return;
       enxovalListenerAtivo = true;
 
-      db.ref('enxoval').on('value', (snapshot) => {
+      db.ref("enxoval").on("value", (snapshot) => {
         listGrid.innerHTML = "";
         const data = snapshot.val();
         if (!data) return;
@@ -351,13 +354,13 @@
         });
 
         itensArray.forEach(item => {
-          const div = document.createElement('div');
-          div.className = `item-card ${item.comprado ? 'checked' : ''}`;
+          const div = document.createElement("div");
+          div.className = `item-card ${item.comprado ? "checked" : ""}`;
           div.innerHTML = `
             <img src="${item.foto || 'https://via.placeholder.com/65/d6eaf8/1a5276?text=📷'}" class="item-img">
             <div class="item-info">
-              <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleItem('${item.id}', ${item.comprado})">
-              <label>${item.texto || ''}</label>
+              <input type="checkbox" ${item.comprado ? "checked" : ""} onchange="toggleItem('${item.id}', ${item.comprado})">
+              <label>${item.texto || ""}</label>
             </div>
             <button class="delete-btn" onclick="removerItem('${item.id}')">&times;</button>
           `;
@@ -369,7 +372,7 @@
     function pararListenerEnxoval() {
       if (!enxovalListenerAtivo) return;
       enxovalListenerAtivo = false;
-      db.ref('enxoval').off();
+      db.ref("enxoval").off();
       listGrid.innerHTML = "";
     }
 
@@ -377,8 +380,8 @@
     auth.onAuthStateChanged(async (user) => {
       currentUser = user;
 
+      // deslogado
       if (!user) {
-        // deslogado -> mostra login
         pararListenerEnxoval();
         logoutMini.style.display = "none";
         appScreen.style.display = "none";
@@ -386,24 +389,24 @@
         return;
       }
 
-      const uid = user.uid;
-      const autorizado = ALLOWED_UIDS.includes(uid);
+      const uid = (user.uid || "").trim();
+      const autorizado = ALLOWED_UIDS.map(u => (u || "").trim()).includes(uid);
 
+      // não autorizado
       if (!autorizado) {
-        // conta não permitida
         pararListenerEnxoval();
         logoutMini.style.display = "none";
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
 
-        loginError.textContent = "Acesso negado: esta conta não está autorizada.";
+        loginError.textContent = `Acesso negado.\nUID desta conta: ${uid}`;
         loginError.style.display = "block";
 
         await auth.signOut();
         return;
       }
 
-      // autorizado -> mostra app
+      // autorizado
       loginError.style.display = "none";
       loginError.textContent = "";
       loginScreen.style.display = "none";
@@ -414,7 +417,7 @@
     });
 
     // ===== IMAGEM =====
-    fileInput.addEventListener('change', function() {
+    fileInput.addEventListener("change", function() {
       const file = this.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -423,34 +426,32 @@
     });
 
     // ===== ADD ITEM =====
-    addBtn.addEventListener('click', () => {
-      if (!currentUser) {
-        alert("Faça login.");
-        return;
-      }
+    addBtn.addEventListener("click", () => {
+      if (!currentUser) return alert("Faça login.");
 
       const nome = itemInput.value.trim();
-      if (nome) {
-        db.ref('enxoval').push({
-          texto: nome,
-          foto: base64Image,
-          comprado: false
-        });
-        itemInput.value = "";
-        base64Image = "";
-        fileInput.value = "";
-      }
+      if (!nome) return;
+
+      db.ref("enxoval").push({
+        texto: nome,
+        foto: base64Image,
+        comprado: false
+      });
+
+      itemInput.value = "";
+      base64Image = "";
+      fileInput.value = "";
     });
 
     // ===== AÇÕES =====
     function toggleItem(id, status) {
       if (!currentUser) return alert("Faça login.");
-      db.ref('enxoval/' + id).update({ comprado: !status });
+      db.ref("enxoval/" + id).update({ comprado: !status });
     }
 
     function removerItem(id) {
       if (!currentUser) return alert("Faça login.");
-      if (confirm("Remover item?")) db.ref('enxoval/' + id).remove();
+      if (confirm("Remover item?")) db.ref("enxoval/" + id).remove();
     }
 
     window.toggleItem = toggleItem;
