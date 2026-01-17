@@ -33,7 +33,6 @@
       position:relative;
     }
 
-    /* ondas */
     .waves-container{
       position:fixed;
       bottom:0;
@@ -96,7 +95,6 @@
       cursor:pointer;
     }
 
-    /* lista */
     .item-card{
       background:var(--card-bg);
       margin-bottom:10px;
@@ -122,11 +120,9 @@
     .delete-btn{background:none;border:none;color:#ec7063;font-size:22px;cursor:pointer;opacity:.4;}
     #fileInput{display:none;}
 
-    /* telas */
     #loginScreen{width:100%;max-width:500px;}
     #appScreen{display:none;width:100%;}
 
-    /* login bonito */
     .login-card{ text-align:center; padding:22px 18px; }
     .login-badge{
       width:54px;height:54px;
@@ -186,7 +182,6 @@
       white-space:pre-line;
     }
 
-    /* botão sair discreto */
     #logoutMini{
       position:fixed;
       top:14px;
@@ -270,7 +265,6 @@
   </div>
 
   <script>
-    // ===== CONFIG FIREBASE =====
     const firebaseConfig = {
       apiKey: "AIzaSyBtttgun9WXvB9h91B582SHfgL3lBMGWWA",
       authDomain: "enxoval-yudi.firebaseapp.com",
@@ -287,24 +281,9 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // ===== FUNÇÃO ANTI "CARACTERE INVISÍVEL" =====
-    function cleanUid(s) {
-      return String(s || "")
-        .normalize("NFKC")
-        .replace(/[\u200B-\u200D\uFEFF]/g, "") // remove chars invisíveis
-        .trim();
-    }
-
-    // ✅ Persistência (resolve currentUser undefined)
+    // persistir login
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
-    // ✅ Apenas vocês dois
-    const ALLOWED_UIDS = [
-      cleanUid("soQ9SVvjaQclgLaAe26TCqNWVqxL2"), // seu UID
-      cleanUid("UID_DA_ANA_AQUI")                // coloque o UID dela aqui depois
-    ];
-
-    // ===== ELEMENTOS =====
     const loginScreen = document.getElementById("loginScreen");
     const appScreen   = document.getElementById("appScreen");
     const loginBtn    = document.getElementById("loginBtn");
@@ -335,17 +314,16 @@
       }
     });
 
-    // ===== LOGOUT =====
     logoutMini.addEventListener("click", async () => {
       await auth.signOut();
     });
 
-    // ===== LISTENER CONTROLADO =====
-    let enxovalListenerAtivo = false;
+    // ===== LISTENER CONTROLADO PELO FIREBASE (RULES) =====
+    let listenerAtivo = false;
 
-    function iniciarListenerEnxoval() {
-      if (enxovalListenerAtivo) return;
-      enxovalListenerAtivo = true;
+    function iniciarListener() {
+      if (listenerAtivo) return;
+      listenerAtivo = true;
 
       db.ref("enxoval").on("value", (snapshot) => {
         listGrid.innerHTML = "";
@@ -353,7 +331,6 @@
         if (!data) return;
 
         const itensArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-
         itensArray.sort((a, b) => {
           if (a.comprado !== b.comprado) return a.comprado - b.comprado;
           return (a.texto || "").localeCompare(b.texto || "");
@@ -372,55 +349,42 @@
           `;
           listGrid.appendChild(div);
         });
+      }, (err) => {
+        // aqui cai PERMISSION_DENIED se as Rules bloquearem
+        console.error(err);
+        loginError.textContent = "Acesso negado pelas Rules do Firebase.";
+        loginError.style.display = "block";
+        pararListener();
+        auth.signOut();
       });
     }
 
-    function pararListenerEnxoval() {
-      if (!enxovalListenerAtivo) return;
-      enxovalListenerAtivo = false;
+    function pararListener() {
+      if (!listenerAtivo) return;
+      listenerAtivo = false;
       db.ref("enxoval").off();
       listGrid.innerHTML = "";
     }
 
-    // ===== AUTH STATE =====
-    auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged((user) => {
       currentUser = user;
 
-      // deslogado
       if (!user) {
-        pararListenerEnxoval();
+        pararListener();
         logoutMini.style.display = "none";
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
         return;
       }
 
-      const uid = cleanUid(user.uid);
-      const autorizado = ALLOWED_UIDS.map(cleanUid).includes(uid);
-
-      // não autorizado
-      if (!autorizado) {
-        pararListenerEnxoval();
-        logoutMini.style.display = "none";
-        appScreen.style.display = "none";
-        loginScreen.style.display = "block";
-
-        // mostra UID na tela pra copiar
-        loginError.textContent = `Acesso negado.\nUID desta conta: ${uid}`;
-        loginError.style.display = "block";
-
-        await auth.signOut();
-        return;
-      }
-
-      // autorizado
+      // logado -> mostra app
       loginError.style.display = "none";
       loginError.textContent = "";
       loginScreen.style.display = "none";
       appScreen.style.display = "block";
       logoutMini.style.display = "block";
 
-      iniciarListenerEnxoval();
+      iniciarListener(); // se Rules negarem, cai no error callback e desloga
     });
 
     // ===== IMAGEM =====
