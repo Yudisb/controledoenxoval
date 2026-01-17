@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Enxoval - Yudi & Ana</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -33,6 +33,7 @@
       position: relative;
     }
 
+    /* ondas */
     .waves-container {
       position: fixed;
       bottom: 0;
@@ -42,12 +43,8 @@
       z-index: -1;
       line-height: 0;
     }
-
     .waves { width: 100%; height: 100%; min-height: 150px; }
-
-    .parallax > use {
-      animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
-    }
+    .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
     .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; fill: rgba(93, 173, 226, 0.7); }
     .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; fill: rgba(169, 204, 227, 0.5); }
     .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; fill: rgba(46, 134, 193, 0.3); }
@@ -89,7 +86,7 @@
       cursor: pointer;
     }
 
-    /* Painel de login */
+    /* card conta */
     .auth-card {
       display: flex;
       gap: 10px;
@@ -97,25 +94,9 @@
       justify-content: space-between;
       margin-bottom: 12px;
     }
-
-    .auth-info .title {
-      font-weight: 600;
-      color: var(--ocean-blue);
-      margin-bottom: 2px;
-    }
-
-    .auth-info .sub {
-      font-size: 0.9rem;
-      color: #2c3e50;
-      opacity: 0.85;
-      word-break: break-all;
-    }
-
-    .auth-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .auth-info .title { font-weight: 600; color: var(--ocean-blue); margin-bottom: 2px; }
+    .auth-info .sub { font-size: 0.9rem; color: #2c3e50; opacity: 0.85; word-break: break-all; }
+    .auth-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
     .btn {
       border: none;
@@ -124,11 +105,11 @@
       font-weight: 600;
       cursor: pointer;
       color: #fff;
+      background: var(--wave-main);
     }
-    #loginBtn { background: var(--wave-main); }
-    #logoutBtn { background: #ec7063; display: none; }
+    .btn-danger { background: #ec7063; }
 
-    /* LISTA */
+    /* lista */
     .item-card {
       background: var(--card-bg);
       margin-bottom: 10px;
@@ -159,61 +140,86 @@
 
     .delete-btn { background: none; border: none; color: #ec7063; font-size: 22px; cursor: pointer; opacity: 0.4; }
     #fileInput { display: none; }
+
+    /* telas */
+    #loginScreen { width: 100%; max-width: 500px; }
+    #appScreen { display: none; width: 100%; }
+    #loginError { margin-top: 10px; color: #ec7063; font-weight: 700; display: none; }
+    #loginHint { margin: 0 0 12px; opacity: .8; }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>Yudi & Ana</h1>
-    <p>Nosso Futuro Lar</p>
-  </header>
+  <!-- TELA LOGIN -->
+  <div id="loginScreen">
+    <header>
+      <h1>Yudi & Ana</h1>
+      <p>Nosso Futuro Lar</p>
+    </header>
 
-  <div class="container">
+    <div class="input-card" style="text-align:center;">
+      <h2 style="margin:0 0 10px;color:#1a5276;">Entrar</h2>
+      <p id="loginHint">Faça login para acessar a lista do enxoval.</p>
 
-    <!-- LOGIN -->
-    <div class="input-card auth-card">
-      <div class="auth-info">
-        <div class="title">Conta</div>
-        <div id="userInfo" class="sub">Não logado</div>
-      </div>
+      <button id="loginBtn" class="btn" style="width:100%;">Entrar com Google</button>
 
-      <div class="auth-actions">
-        <button id="loginBtn" class="btn">Entrar</button>
-        <button id="logoutBtn" class="btn">Sair</button>
-      </div>
+      <div id="loginError"></div>
     </div>
-
-    <!-- INPUT -->
-    <div class="input-card">
-      <div class="row">
-        <input type="text" id="itemInput" placeholder="O que vamos comprar?">
-        <label for="fileInput" class="file-label">📷</label>
-        <input type="file" id="fileInput" accept="image/*">
-      </div>
-      <button id="addBtn">Adicionar à Lista</button>
-    </div>
-
-    <div id="listGrid"></div>
   </div>
 
-  <div class="waves-container">
-    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-      viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-      <defs>
-        <path id="gentle-wave"
-          d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-      </defs>
-      <g class="parallax">
-        <use xlink:href="#gentle-wave" x="48" y="0" />
-        <use xlink:href="#gentle-wave" x="48" y="3" />
-        <use xlink:href="#gentle-wave" x="48" y="5" />
-        <use xlink:href="#gentle-wave" x="48" y="7" />
-      </g>
-    </svg>
+  <!-- TELA APP (ENXOVAL) -->
+  <div id="appScreen">
+    <header>
+      <h1>Yudi & Ana</h1>
+      <p>Nosso Futuro Lar</p>
+    </header>
+
+    <div class="container">
+
+      <!-- CONTA -->
+      <div class="input-card auth-card">
+        <div class="auth-info">
+          <div class="title">Conta</div>
+          <div id="userInfo" class="sub">—</div>
+        </div>
+        <div class="auth-actions">
+          <button id="logoutBtn" class="btn btn-danger">Sair</button>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="input-card">
+        <div class="row">
+          <input type="text" id="itemInput" placeholder="O que vamos comprar?">
+          <label for="fileInput" class="file-label">📷</label>
+          <input type="file" id="fileInput" accept="image/*">
+        </div>
+        <button id="addBtn">Adicionar à Lista</button>
+      </div>
+
+      <div id="listGrid"></div>
+    </div>
+
+    <div class="waves-container">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave"
+            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
+    </div>
   </div>
 
   <script>
+    // ====== CONFIG FIREBASE ======
     const firebaseConfig = {
       apiKey: "AIzaSyBtttgun9WXvB9h91B582SHfgL3lBMGWWA",
       authDomain: "enxoval-yudi.firebaseapp.com",
@@ -230,26 +236,41 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
+    // ✅ COLE AQUI OS 2 UIDs (VOCÊ + ELA)
+    // (por enquanto deixe assim, depois substitui quando você pegar os UIDs)
+    const ALLOWED_UIDS = [
+      "SEU_UID_AQUI",
+      "UID_DA_ANA_AQUI"
+    ];
+
+    // ====== ELEMENTOS ======
+    const loginScreen = document.getElementById("loginScreen");
+    const appScreen   = document.getElementById("appScreen");
+    const loginBtn    = document.getElementById("loginBtn");
+    const logoutBtn   = document.getElementById("logoutBtn");
+    const loginError  = document.getElementById("loginError");
+    const userInfo    = document.getElementById("userInfo");
+
     const itemInput = document.getElementById('itemInput');
     const fileInput = document.getElementById('fileInput');
-    const addBtn = document.getElementById('addBtn');
-    const listGrid = document.getElementById('listGrid');
-
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userInfo = document.getElementById("userInfo");
+    const addBtn    = document.getElementById('addBtn');
+    const listGrid  = document.getElementById('listGrid');
 
     let base64Image = "";
     let currentUser = null;
 
-    // ===== AUTH =====
+    // ====== LOGIN/LOGOUT ======
     loginBtn.addEventListener("click", async () => {
+      loginError.style.display = "none";
+      loginError.textContent = "";
+
       try {
         const res = await auth.signInWithPopup(provider);
-        console.log("Logado! UID:", res.user.uid); // <-- aqui aparece o UID
+        console.log("UID LOGADO:", res.user.uid); // <-- pega o UID aqui também
       } catch (e) {
         console.error(e);
-        alert("Não foi possível logar. Confira se o Google está ativado no Firebase Auth.");
+        loginError.textContent = "Não foi possível logar. Verifique Google ativado e domínio autorizado.";
+        loginError.style.display = "block";
       }
     });
 
@@ -257,56 +278,18 @@
       await auth.signOut();
     });
 
-    auth.onAuthStateChanged((user) => {
-      currentUser = user;
+    // ====== LISTENER CONTROLADO ======
+    let enxovalListenerAtivo = false;
 
-      if (user) {
-        const nome = user.displayName || "Usuário";
-        userInfo.textContent = `${nome} — UID: ${user.uid}`;
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-      } else {
-        userInfo.textContent = "Não logado";
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-      }
-    });
+    function iniciarListenerEnxoval() {
+      if (enxovalListenerAtivo) return;
+      enxovalListenerAtivo = true;
 
-    // ===== IMAGE INPUT =====
-    fileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) { base64Image = e.target.result; };
-        reader.readAsDataURL(file);
-      }
-    });
+      db.ref('enxoval').on('value', (snapshot) => {
+        listGrid.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
 
-    // ===== ADD ITEM =====
-    addBtn.addEventListener('click', () => {
-      if (!currentUser) {
-        alert("Faça login para adicionar itens.");
-        return;
-      }
-
-      const nome = itemInput.value.trim();
-      if (nome) {
-        db.ref('enxoval').push({
-          texto: nome,
-          foto: base64Image,
-          comprado: false
-        });
-        itemInput.value = "";
-        base64Image = "";
-        fileInput.value = "";
-      }
-    });
-
-    // ===== RENDER LIST =====
-    db.ref('enxoval').on('value', (snapshot) => {
-      listGrid.innerHTML = "";
-      const data = snapshot.val();
-      if (data) {
         const itensArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
 
         // Pendentes em cima, concluídos embaixo + alfabética
@@ -328,24 +311,98 @@
           `;
           listGrid.appendChild(div);
         });
+      });
+    }
+
+    function pararListenerEnxoval() {
+      if (!enxovalListenerAtivo) return;
+      enxovalListenerAtivo = false;
+      db.ref('enxoval').off();
+      listGrid.innerHTML = "";
+    }
+
+    // ====== AUTH STATE ======
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+
+      // deslogado: mostra login
+      if (!user) {
+        pararListenerEnxoval();
+        appScreen.style.display = "none";
+        loginScreen.style.display = "block";
+        userInfo.textContent = "—";
+        return;
+      }
+
+      const uid = user.uid;
+      const autorizado = ALLOWED_UIDS.includes(uid);
+
+      if (!autorizado) {
+        // conta não permitida
+        pararListenerEnxoval();
+        appScreen.style.display = "none";
+        loginScreen.style.display = "block";
+        loginError.textContent = "Acesso negado: esta conta não está autorizada.";
+        loginError.style.display = "block";
+
+        // desloga automaticamente
+        await auth.signOut();
+        return;
+      }
+
+      // autorizado: mostra app
+      loginError.style.display = "none";
+      loginError.textContent = "";
+      loginScreen.style.display = "none";
+      appScreen.style.display = "block";
+      userInfo.textContent = `${user.displayName || "Usuário"} — UID: ${uid}`;
+
+      iniciarListenerEnxoval();
+    });
+
+    // ====== IMAGEM ======
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) { base64Image = e.target.result; };
+      reader.readAsDataURL(file);
+    });
+
+    // ====== ADD ITEM ======
+    addBtn.addEventListener('click', () => {
+      if (!currentUser) {
+        alert("Faça login.");
+        return;
+      }
+
+      const nome = itemInput.value.trim();
+      if (nome) {
+        db.ref('enxoval').push({
+          texto: nome,
+          foto: base64Image,
+          comprado: false
+        });
+        itemInput.value = "";
+        base64Image = "";
+        fileInput.value = "";
       }
     });
 
-    // ===== ACTIONS =====
+    // ====== AÇÕES ======
     function toggleItem(id, status) {
-      if (!currentUser) return alert("Faça login para editar.");
+      if (!currentUser) return alert("Faça login.");
       db.ref('enxoval/' + id).update({ comprado: !status });
     }
 
     function removerItem(id) {
-      if (!currentUser) return alert("Faça login para remover.");
+      if (!currentUser) return alert("Faça login.");
       if (confirm("Remover item?")) db.ref('enxoval/' + id).remove();
     }
 
-    // expõe no window para funcionar com onchange/onclick inline
+    // expõe no window (por causa do onchange/onclick inline)
     window.toggleItem = toggleItem;
     window.removerItem = removerItem;
   </script>
-
 </body>
 </html>
