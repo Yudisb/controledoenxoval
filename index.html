@@ -287,14 +287,21 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
+    // ===== FUNÇÃO ANTI "CARACTERE INVISÍVEL" =====
+    function cleanUid(s) {
+      return String(s || "")
+        .normalize("NFKC")
+        .replace(/[\u200B-\u200D\uFEFF]/g, "") // remove chars invisíveis
+        .trim();
+    }
+
     // ✅ Persistência (resolve currentUser undefined)
-    // LOCAL = mantém logado no navegador
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
     // ✅ Apenas vocês dois
     const ALLOWED_UIDS = [
-      "soQ9SVvjaQclgLaAe26TCqNWVqxL2", // seu UID
-      "UID_DA_ANA_AQUI"                // coloque o UID dela aqui depois
+      cleanUid("soQ9SVvjaQclgLaAe26TCqNWVqxL2"), // seu UID
+      cleanUid("UID_DA_ANA_AQUI")                // coloque o UID dela aqui depois
     ];
 
     // ===== ELEMENTOS =====
@@ -318,7 +325,6 @@
       loginError.textContent = "";
 
       try {
-        // garante persistência antes do popup
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const res = await auth.signInWithPopup(provider);
         console.log("UID LOGADO:", res.user.uid);
@@ -389,8 +395,8 @@
         return;
       }
 
-      const uid = (user.uid || "").trim();
-      const autorizado = ALLOWED_UIDS.map(u => (u || "").trim()).includes(uid);
+      const uid = cleanUid(user.uid);
+      const autorizado = ALLOWED_UIDS.map(cleanUid).includes(uid);
 
       // não autorizado
       if (!autorizado) {
@@ -399,6 +405,7 @@
         appScreen.style.display = "none";
         loginScreen.style.display = "block";
 
+        // mostra UID na tela pra copiar
         loginError.textContent = `Acesso negado.\nUID desta conta: ${uid}`;
         loginError.style.display = "block";
 
